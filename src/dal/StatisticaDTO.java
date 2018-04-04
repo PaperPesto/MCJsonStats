@@ -2,9 +2,12 @@ package dal;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
+import org.json.JSONObject;
+
 public class StatisticaDTO {
 
-	public String minecraft_uuid;
-	
-	public Date lastUpdate;
+	public ObjectId _id;
+	public Date date;
+	public String uuid;
 }

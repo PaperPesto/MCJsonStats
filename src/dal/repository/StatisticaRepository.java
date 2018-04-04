@@ -1,6 +1,9 @@
 package dal.repository;
 
+import java.util.logging.Logger;
+
 import org.bson.Document;
+import org.json.JSONObject;
 
 import com.mongodb.client.model.Sorts;
 
@@ -19,16 +22,34 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 	public StatisticaDTO getFirstStatisticaById(String uuid) {
 		
 		Document document = coll.find( 
-				new Document("minecraft_uuid", uuid)
+				new Document("uuid", uuid)
 				)
-				.sort(Sorts.ascending("ISOdate"))
+				.sort(Sorts.ascending("date"))
 				.first();
 		
 		StatisticaDTO stat = new StatisticaDTO();
-		stat.minecraft_uuid = document.getString("minecraft_uuid");
-		stat.lastUpdate = document.getDate("ISOdate");
+		
+		stat._id = document.getObjectId("_id");
+		stat.uuid = document.getString("uuid");
+		stat.date = document.getDate("date");
 		
 		return stat;
+	}
+	
+	public void insertStatistica(JSONObject statistica) {
+		Logger log = Logger.getLogger("StatisticaRepository::Insert");
+		Document stat = new Document();
+		stat.put("uuid", statistica.get("uuid"));	
+		stat.put("date", statistica.get("date"));
+		Document document = Document.parse( statistica.get("stat").toString() );
+		stat.put("stat", document);
+		
+		try{
+			coll.insertOne(stat);
+		} catch(Exception e) {
+			log.warning("Problemi nell'inserimento del documento");
+			throw e;
+		}
 	}
 }
 
