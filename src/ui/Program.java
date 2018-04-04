@@ -6,7 +6,13 @@ import java.util.logging.Logger;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import bl.JsonBusiness;
+import dal.PlayerDTO;
 import dal.fs.FileSystemReader;
 import dal.fs.FileSystemWriter;
 import dal.repository.GenericRepository;
@@ -16,8 +22,8 @@ import model.MyConfiguration;
 import utility.ConfigurationManager;
 
 public class Program {
-	// TODO DI con file di configurazione
 	public static void main(String[] args) throws Exception {
+		
 		Logger log = Logger.getLogger("MainLogger");
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT | %4$-7s | %5$s %n");
 
@@ -27,6 +33,8 @@ public class Program {
 		
 		// Lettura Player da DB
 		PlayerRepository pgrepo = new PlayerRepository(config);
+		PlayerDTO lippo = pgrepo.getPlayerByNickname("Leep");
+		List<PlayerDTO> players = pgrepo.getAllPlayers();
 
 		// Lettura da FS
 		FileSystemReader reader = new FileSystemReader(config);

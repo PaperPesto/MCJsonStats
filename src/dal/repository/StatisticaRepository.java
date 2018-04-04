@@ -16,16 +16,16 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 	}
 
 
-	public StatisticaDTO getFirstStatisticaById(String id) {
+	public StatisticaDTO getFirstStatisticaById(String uuid) {
 		
 		Document document = coll.find( 
-				new Document("minecraft_id", id)
+				new Document("minecraft_uuid", uuid)
 				)
 				.sort(Sorts.ascending("ISOdate"))
 				.first();
 		
 		StatisticaDTO stat = new StatisticaDTO();
-		stat.minecraft_uuid = document.getString("minecraft_id");
+		stat.minecraft_uuid = document.getString("minecraft_uuid");
 		stat.lastUpdate = document.getDate("ISOdate");
 		
 		return stat;

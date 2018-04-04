@@ -1,7 +1,5 @@
 package dal;
 
-import java.util.Date;
-
 public class PlayerDTO {
 	
 	public String nome;
