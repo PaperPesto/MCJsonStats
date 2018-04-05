@@ -1,9 +1,12 @@
 package dal.repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.bson.Document;
 
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 
 import dal.MongoClientConnection;
@@ -47,6 +50,21 @@ public class GenericRepository extends AbstractRepository implements IGenericRep
 	public Document readFirstDocument() {
 		
 		return coll.find().sort(Sorts.descending("ISOdate")).first();
+	}
+
+	
+	public List<Document> readAllDocuments() {
+		
+		List<Document> docs = new ArrayList<Document>();
+		MongoCursor<Document> cursor = coll.find().iterator();
+
+		while (cursor.hasNext()) {
+			Document document = cursor.next();
+			docs.add(document);
+		}
+		cursor.close();
+		
+		return docs;
 	}
 
 

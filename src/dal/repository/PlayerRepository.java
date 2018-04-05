@@ -36,7 +36,7 @@ public class PlayerRepository extends AbstractRepository implements IPlayerRepos
 			player.nome = document.getString("nome");
 			player.cognome = document.getString("cognome");
 			player.nickName = document.getString("nickname");
-			player.minecraft_uuid = document.getString("minecraft_uuid");
+			player.uuid = document.getString("minecraft_uuid");
 
 			giocatori.add(player);
 		}
@@ -53,7 +53,7 @@ public class PlayerRepository extends AbstractRepository implements IPlayerRepos
 		playerdto.nome = document.getString("nome");
 		playerdto.cognome = document.getString("cognome");
 		playerdto.nickName = document.getString("nickname");
-		playerdto.minecraft_uuid = document.getString("minecraft_uuid");
+		playerdto.uuid = document.getString("minecraft_uuid");
 
 		return playerdto;
 	}
@@ -67,7 +67,7 @@ public class PlayerRepository extends AbstractRepository implements IPlayerRepos
 		playerdto.nome = document.getString("nome");
 		playerdto.cognome = document.getString("cognome");
 		playerdto.nickName = document.getString("nickname");
-		playerdto.minecraft_uuid = document.getString("minecraft_uuid");
+		playerdto.uuid = document.getString("minecraft_uuid");
 
 		return playerdto;
 	}

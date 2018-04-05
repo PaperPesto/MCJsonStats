@@ -27,7 +27,8 @@ public class Program {
 
 		// Lettura DB
 		StatisticaRepository statrepo = new StatisticaRepository(config);
-		StatisticaDTO laststats = statrepo.getFirstStatisticaById("35a0f2a1-d085-34b5-ad24-db3dda7b03f0");
+		StatisticaDTO laststats = statrepo.getLastStatisticaById("35a0f2a1-d085-34b5-ad24-db3dda7b03f0");
+		List<StatisticaDTO>	statlist = statrepo.getLastStatistiche();
 
 		// Lettura da FS
 		FileSystemReader reader = new FileSystemReader(config);
