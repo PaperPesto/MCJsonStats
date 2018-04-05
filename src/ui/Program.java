@@ -9,6 +9,7 @@ import bl.JsonBusiness;
 import dal.StatisticaDTO;
 import dal.fs.FileSystemReader;
 import dal.fs.FileSystemWriter;
+import dal.repository.GenericRepository;
 import dal.repository.StatisticaRepository;
 import model.MetaJson;
 import model.MyConfiguration;
@@ -24,6 +25,10 @@ public class Program {
 		// Lettura del file di configurazione
 		ConfigurationManager.readConfigFile();
 		MyConfiguration config = ConfigurationManager.getConfiguration();
+		
+		// Prova su DemoStatCollection
+		GenericRepository repo = new GenericRepository("test", "CollectionFromJava", config);
+//		repo.readDocumentsByGroup();
 
 		// Lettura DB
 		StatisticaRepository statrepo = new StatisticaRepository(config);

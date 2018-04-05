@@ -1,15 +1,26 @@
 package dal.repository;
 
+import static com.mongodb.client.model.Aggregates.group;
+import static com.mongodb.client.model.Aggregates.project;
+import static com.mongodb.client.model.Aggregates.sort;
+import static com.mongodb.client.model.Projections.fields;
+import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Sorts.orderBy;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.bson.Document;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 
 import dal.MongoClientConnection;
+import dal.StatisticaDTO;
 import model.MyConfiguration;
 
 public class GenericRepository extends AbstractRepository implements IGenericRepository{
@@ -67,6 +78,24 @@ public class GenericRepository extends AbstractRepository implements IGenericRep
 		return docs;
 	}
 
+	public void readDocumentsByGroup() {
+		// Il pipeline ha un verso di percorrenza quando si fa il group dei documenti
+		// In particolare: prima si filtra, poi si grouppa, poi si fanno aggregazioni
+		AggregateIterable<Document> docs = coll.aggregate(Arrays.asList(
+				project(fields(include("nome", "cognome"))),
+				sort(orderBy(descending("età"))),
+                group("$cognome")
+//                sort(orderBy(descending("date")))
+                
+
+				));
+		
+		for(Document d : docs) {
+			System.out.println(d.toString());
+		}
+		
+		boolean ferma = true;
+	}
 
 
 }

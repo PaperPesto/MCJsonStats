@@ -3,6 +3,9 @@ package dal.repository;
 // Importazione metodi statici
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Accumulators.*;
+import static com.mongodb.client.model.Sorts.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +16,7 @@ import org.bson.Document;
 import org.json.JSONObject;
 
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Sorts;
 
 import dal.MongoClientConnection;
@@ -51,12 +55,19 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 
 		List<StatisticaDTO> statistiche = new ArrayList<StatisticaDTO>();
 
+		// Il pipeline ha un verso di percorrenza quando si fa il group dei documenti
+		// In particolare: prima si filtra, poi si grouppa, poi si fanno aggregazioni
 		AggregateIterable<Document> docs = coll.aggregate(Arrays.asList(
-//				match(eq("uuid", "35a0f2a1-d085-34b5-ad24-db3dda7b03f0"))
-//                group("$customerId", sum("totalQuantity", "$quantity"),
-//                                     avg("averageQuantity", "$quantity"))
-//                out("authors")));
+				project(fields(include("date", "uuid"))),
+                group("$uuid"),
+                sort(orderBy(descending("date")))
+                
+
 				));
+		
+		for(Document d : docs) {
+			System.out.println(d.toString());
+		}
 		
 		return statistiche;
 	}
