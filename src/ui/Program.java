@@ -9,6 +9,7 @@ import bl.JsonBusiness;
 import dal.StatisticaDTO;
 import dal.fs.FileSystemReader;
 import dal.fs.FileSystemWriter;
+import dal.repository.CollectionTesterRepository;
 import dal.repository.GenericRepository;
 import dal.repository.StatisticaRepository;
 import model.MetaJson;
@@ -27,12 +28,14 @@ public class Program {
 		MyConfiguration config = ConfigurationManager.getConfiguration();
 		
 		// Prova su DemoStatCollection
-		GenericRepository repo = new GenericRepository("test", "CollectionFromJava", config);
+//		GenericRepository repo = new GenericRepository("javaTest", "demoStatCollection", config);
 //		repo.readDocumentsByGroup();
+//		CollectionTesterRepository reppo = new CollectionTesterRepository(config);
+//		reppo.generateDemoStatCollection();
 
 		// Lettura DB
 		StatisticaRepository statrepo = new StatisticaRepository(config);
-		StatisticaDTO laststats = statrepo.getLastStatisticaById("35a0f2a1-d085-34b5-ad24-db3dda7b03f0");
+//		StatisticaDTO laststats = statrepo.getLastStatisticaById("35a0f2a1-d085-34b5-ad24-db3dda7b03f0");
 		List<StatisticaDTO>	statlist = statrepo.getLastStatistiche();
 
 		// Lettura da FS

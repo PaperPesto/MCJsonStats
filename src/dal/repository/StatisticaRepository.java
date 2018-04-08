@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Sorts;
@@ -58,10 +59,12 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		// Il pipeline ha un verso di percorrenza quando si fa il group dei documenti
 		// In particolare: prima si filtra, poi si grouppa, poi si fanno aggregazioni
 		AggregateIterable<Document> docs = coll.aggregate(Arrays.asList(
-				project(fields(include("date", "uuid"))),
-                group("$uuid"),
-                sort(orderBy(descending("date")))
-                
+				sort(orderBy(ascending("date"))),
+				new BasicDBObject("$group", 
+						new BasicDBObject("_id", "$uuid")
+						.append("lastUpdate", new BasicDBObject("$last", "$date"))
+						.append("count", new BasicDBObject("$sum", 1))),
+                out("statsFromJava")
 
 				));
 		
