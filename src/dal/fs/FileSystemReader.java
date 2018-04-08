@@ -50,6 +50,7 @@ public class FileSystemReader {
 			String jsonString = new String(encoded, StandardCharsets.UTF_8);
 			MetaDati metaDati = new MetaDati();
 			metaDati.sourceFile = f;
+			metaDati.name = f.getName();
 			
 			MetaJson metaJson = new MetaJson();
 			metaJson.jsonString = jsonString;

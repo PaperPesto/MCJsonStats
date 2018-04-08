@@ -2,6 +2,7 @@ package dal.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -109,16 +110,33 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 	public void insertOnlyNewStats(List<StatisticaDTO> oldstats, List<JSONObject> newstats) {
 
 		for (JSONObject newstat : newstats) {
-			String newuuid = newstat.getString("uuid");
+			String new_uuid = newstat.getString("uuid");
+			boolean match = false;
 
-			StatisticaDTO matchedstat = oldstats
-					.stream()
-					.filter(x -> x.uuid.equals(newuuid))
-					.findFirst()
-					.orElse(null);
+			for (StatisticaDTO oldstat : oldstats) {
+				String old_uuid = oldstat.uuid;
+
+				if (new_uuid.equals(old_uuid)) {
+					Date new_date = (Date) newstat.get("date");
+					Date old_date = oldstat.date;
+					
+					System.out.println("uuid: " + new_uuid);
+					System.out.println("vecchia: " + new_date);
+					System.out.println("nuova: " + old_date);
+					match = true;
+					
+					if(new_date > old_date) {
+						// TODO come si fa?
+					}
+					
+					break;
+				}
+			}
 			
-			System.out.println("vecchia: " + matchedstat.date.toString());
-			System.out.println("nuova: " + newstat.get("date"));
+			if(!match) {
+				// Ho trovato un nuovo uuid che non era presente nel DB
+				System.out.println("Trovato nuovo uuid: " + new_uuid);
+			}
 		}
 	}
 }

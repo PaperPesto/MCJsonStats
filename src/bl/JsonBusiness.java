@@ -66,11 +66,11 @@ public class JsonBusiness {
 			for (JSONObject j : rawJsonList) {
 				myJson = deepMerge(myJson, j);
 			}
-			log.info("Successo: " + inputMetaJson.metaDati.sourceFile.getName());
 		} catch (Exception e) {
 			log.warning("Errore nella riorganizzazione del json");
 			throw e;
 		}
+		log.info("executeJsonReorganization success: " + rawJsonList.size() + " campi riorganizzati per l'uuid " + inputMetaJson.metaDati.name);
 		return myJson;
 	}
 
