@@ -28,7 +28,8 @@ import model.MyConfiguration;
 public class GenericRepository extends AbstractRepository implements IGenericRepository{
 
 	public GenericRepository(String dbName, String collName, MyConfiguration config) {
-		db = MongoClientConnection.getInstance(config).getDatabase(dbName);
+		this.config = config;
+		db = MongoClientConnection.getInstance(this.config).getDatabase(dbName);
 		coll = db.getCollection(collName);
 	}
 	

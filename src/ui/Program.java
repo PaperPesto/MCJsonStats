@@ -34,9 +34,10 @@ public class Program {
 //		reppo.generateDemoStatCollection();
 
 		// Lettura DB
+		// hnjb - codice di pica
 		StatisticaRepository statrepo = new StatisticaRepository(config);
-//		StatisticaDTO laststats = statrepo.getLastStatisticaById("35a0f2a1-d085-34b5-ad24-db3dda7b03f0");
-		List<StatisticaDTO>	statlist = statrepo.getLastStatistiche();
+		statrepo.makeLastStatsCollection();
+		List<StatisticaDTO> laststats = statrepo.getLastStatistics();	// rimasto qui: adesso riesco a tirar su dal DB le ultime statistiche per ogni giocatore (per ogni uuid). Adesso devo implementare la logica che confronta le utlime statistiche con quelle lette da FS (oppure in futuro da FTP)
 
 		// Lettura da FS
 		FileSystemReader reader = new FileSystemReader(config);

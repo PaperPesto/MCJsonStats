@@ -10,4 +10,5 @@ public class StatisticaDTO {
 	public ObjectId _id;
 	public Date date;
 	public String uuid;
+	public int count;
 }

@@ -39,6 +39,7 @@ public class ConfigurationManager {
 			configuration.nameDB = new String(props.getProperty("nameDB"));
 			configuration.playersCollection = new String(props.getProperty("playersCollection"));
 			configuration.statsCollection = new String(props.getProperty("statsCollection"));
+			configuration.lastStatsCollection = new String(props.getProperty("lastStatsCollection"));
 			
 			reader.close();
 			
