@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.json.JSONObject;
@@ -51,6 +52,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		// libreria?
 		for (@SuppressWarnings("unused")
 		Document d : docs) {
+
 		}
 		// --------------------------------------------------------------------
 	}
@@ -101,6 +103,22 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		} catch (Exception e) {
 			log.warning("Problemi nell'inserimento del documento");
 			throw e;
+		}
+	}
+
+	public void insertOnlyNewStats(List<StatisticaDTO> oldstats, List<JSONObject> newstats) {
+
+		for (JSONObject newstat : newstats) {
+			String newuuid = newstat.getString("uuid");
+
+			StatisticaDTO matchedstat = oldstats
+					.stream()
+					.filter(x -> x.uuid.equals(newuuid))
+					.findFirst()
+					.orElse(null);
+			
+			System.out.println("vecchia: " + matchedstat.date.toString());
+			System.out.println("nuova: " + newstat.get("date"));
 		}
 	}
 }

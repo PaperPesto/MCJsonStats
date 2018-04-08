@@ -49,6 +49,9 @@ public class Program {
 		JsonBusiness business = new JsonBusiness(metajsonlist, config);
 		business.execute();
 		List<JSONObject> jsonlist = business.getOutputJson();
+		
+		// Prova matching vecchie-nuove statistiche
+		statrepo.insertOnlyNewStats(laststats, jsonlist);
 
 		// Scrittura su DB - dead code
 		if (false) {
