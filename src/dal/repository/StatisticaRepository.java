@@ -16,8 +16,8 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 
 import dal.MongoClientConnection;
-import dal.StatisticaDTO;
 import model.MyConfiguration;
+import model.StatisticaDTO;
 
 public class StatisticaRepository extends AbstractRepository implements IStatisticaRepository {
 
@@ -52,7 +52,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		// Questo blocco qui sotto va messo per forza sennò non funziona - BUG della
 		// libreria?
 		for (@SuppressWarnings("unused")
-		Document d : docs) {
+			Document d : docs) {
 
 		}
 		// --------------------------------------------------------------------
@@ -120,13 +120,14 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 					Date new_date = (Date) newstat.get("date");
 					Date old_date = oldstat.date;
 					
+					System.out.println();
 					System.out.println("uuid: " + new_uuid);
 					System.out.println("vecchia: " + new_date);
 					System.out.println("nuova: " + old_date);
 					match = true;
 					
-					if(new_date > old_date) {
-						// TODO come si fa?
+					if(new_date.after(old_date)) {
+						System.out.println("----Data al contrario");
 					}
 					
 					break;

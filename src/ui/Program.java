@@ -6,14 +6,14 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 import bl.JsonBusiness;
-import dal.StatisticaDTO;
 import dal.fs.FileSystemReader;
 import dal.fs.FileSystemWriter;
 import dal.repository.CollectionTesterRepository;
 import dal.repository.GenericRepository;
 import dal.repository.StatisticaRepository;
-import model.MetaJson;
+import model.JsonStringStat;
 import model.MyConfiguration;
+import model.StatisticaDTO;
 import utility.ConfigurationManager;
 
 public class Program {
@@ -43,7 +43,7 @@ public class Program {
 		FileSystemReader reader = new FileSystemReader(config);
 		reader.readFileList();
 		reader.read();
-		List<MetaJson> metajsonlist = reader.getPayload();
+		List<JsonStringStat> metajsonlist = reader.getPayload();
 
 		// Core business
 		JsonBusiness business = new JsonBusiness(metajsonlist, config);

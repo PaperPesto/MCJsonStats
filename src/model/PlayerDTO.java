@@ -1,4 +1,4 @@
-package dal;
+package model;
 
 public class PlayerDTO {
 	

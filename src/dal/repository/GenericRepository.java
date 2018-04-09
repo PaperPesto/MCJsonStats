@@ -22,8 +22,8 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 
 import dal.MongoClientConnection;
-import dal.StatisticaDTO;
 import model.MyConfiguration;
+import model.StatisticaDTO;
 
 public class GenericRepository extends AbstractRepository implements IGenericRepository{
 

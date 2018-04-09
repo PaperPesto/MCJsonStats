@@ -10,20 +10,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import model.MetaDati;
-import model.MetaJson;
+import model.JsonStringStat;
 import model.MyConfiguration;
 
 public class FileSystemReader {
 
 	private MyConfiguration config;
-	private List<MetaJson> metaJsonList;
+	private List<JsonStringStat> metaJsonList;
 	private List<File> fileList;
 
 	// Costruttore
 	public FileSystemReader(MyConfiguration config) {
 		this.config = config;
-		metaJsonList = new ArrayList<MetaJson>();
+		metaJsonList = new ArrayList<JsonStringStat>();
 	}
 
 	public void readFileList() {
@@ -48,19 +47,17 @@ public class FileSystemReader {
 				e1.printStackTrace();
 			}
 			String jsonString = new String(encoded, StandardCharsets.UTF_8);
-			MetaDati metaDati = new MetaDati();
-			metaDati.sourceFile = f;
-			metaDati.name = f.getName();
 			
-			MetaJson metaJson = new MetaJson();
-			metaJson.jsonString = jsonString;
-			metaJson.metaDati = metaDati;
+			JsonStringStat jsonstat = new JsonStringStat();
+			jsonstat.jsonString = jsonString;
+			jsonstat.name = f.getName();
+			jsonstat.sourceFile = f;
 			
-			metaJsonList.add(metaJson);
+			metaJsonList.add(jsonstat);
 		}
 	}
 
-	public List<MetaJson> getPayload() {
+	public List<JsonStringStat> getPayload() {
 		return metaJsonList;
 	}
 

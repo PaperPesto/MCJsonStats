@@ -1,6 +1,6 @@
 package dal.repository;
 
-import dal.StatisticaDTO;
+import model.StatisticaDTO;
 
 public interface IStatisticaRepository {
 

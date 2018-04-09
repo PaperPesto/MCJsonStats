@@ -2,7 +2,7 @@ package dal.repository;
 
 import java.util.List;
 
-import dal.PlayerDTO;
+import model.PlayerDTO;
 
 public interface IPlayerRepository {
 

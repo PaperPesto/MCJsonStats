@@ -9,12 +9,12 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import model.MetaJson;
+import model.JsonStringStat;
 import model.MyConfiguration;
 
 public class JsonBusiness {
 
-	private List<MetaJson> inputMetaJsonList; // Raw - serve per metadati (data, sourcefile, ecc)
+	private List<JsonStringStat> inputJsonStringList; // Raw - serve per metadati (data, sourcefile, ecc)
 	private MyConfiguration config;
 	private List<JSONObject> outputJsonList; // Riorganizzato
 
@@ -22,8 +22,8 @@ public class JsonBusiness {
 		return outputJsonList;
 	}
 
-	public JsonBusiness(List<MetaJson> inputMetaJsonList, MyConfiguration config) {
-		this.inputMetaJsonList = inputMetaJsonList;
+	public JsonBusiness(List<JsonStringStat> inputJsonStringList, MyConfiguration config) {
+		this.inputJsonStringList = inputJsonStringList;
 		this.config = config;
 		outputJsonList = new ArrayList<JSONObject>();
 	}
@@ -31,14 +31,14 @@ public class JsonBusiness {
 	public void execute() {
 		Logger log = Logger.getLogger("execute");
 		
-		for(MetaJson mj : inputMetaJsonList) {
+		for(JsonStringStat mj : inputJsonStringList) {
 		
 		JSONObject cookedJson = executeJsonReorganization(mj);
 		
 		JSONObject dateJson = new JSONObject();
-		dateJson.put("date", new Date(mj.metaDati.sourceFile.lastModified()));
+		dateJson.put("date", new Date(mj.sourceFile.lastModified()));
 		JSONObject uuidJson = new JSONObject();
-		uuidJson.put("uuid", mj.metaDati.sourceFile.getName().replace(".json", ""));
+		uuidJson.put("uuid", mj.sourceFile.getName().replace(".json", ""));
 //		JSONObject sourceFileJson = new JSONObject();
 //		sourceFileJson.put("sourceFile", inputMetaJson.metaDati.sourceFile.getAbsolutePath());
 		
@@ -55,10 +55,10 @@ public class JsonBusiness {
 	}
 	
 
-	private JSONObject executeJsonReorganization(MetaJson inputMetaJson) {
+	private JSONObject executeJsonReorganization(JsonStringStat inputJsonString) {
 		Logger log = Logger.getLogger("JsonReorganization");
 		
-		JSONObject rawJson = new JSONObject(inputMetaJson.jsonString);
+		JSONObject rawJson = new JSONObject(inputJsonString.jsonString);
 		List<JSONObject> rawJsonList = getJsonList(rawJson);
 		JSONObject myJson = new JSONObject();
 		
@@ -70,7 +70,7 @@ public class JsonBusiness {
 			log.warning("Errore nella riorganizzazione del json");
 			throw e;
 		}
-		log.info("executeJsonReorganization success: " + rawJsonList.size() + " campi riorganizzati per l'uuid " + inputMetaJson.metaDati.name);
+		log.info("executeJsonReorganization success: " + rawJsonList.size() + " campi riorganizzati per l'uuid " + inputJsonString.name);
 		return myJson;
 	}
 

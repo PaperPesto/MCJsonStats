@@ -10,8 +10,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 
 import dal.MongoClientConnection;
-import dal.PlayerDTO;
 import model.MyConfiguration;
+import model.PlayerDTO;
 
 public class PlayerRepository extends AbstractRepository implements IPlayerRepository {
 
