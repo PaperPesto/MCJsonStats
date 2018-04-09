@@ -9,12 +9,12 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import model.JsonStringStat;
+import model.StatisticaFS;
 import model.MyConfiguration;
 
 public class JsonBusiness {
 
-	private List<JsonStringStat> inputJsonStringList; // Raw - serve per metadati (data, sourcefile, ecc)
+	private List<StatisticaFS> inputJsonStringList; // Raw - serve per metadati (data, sourcefile, ecc)
 	private MyConfiguration config;
 	private List<JSONObject> outputJsonList; // Riorganizzato
 
@@ -22,7 +22,7 @@ public class JsonBusiness {
 		return outputJsonList;
 	}
 
-	public JsonBusiness(List<JsonStringStat> inputJsonStringList, MyConfiguration config) {
+	public JsonBusiness(List<StatisticaFS> inputJsonStringList, MyConfiguration config) {
 		this.inputJsonStringList = inputJsonStringList;
 		this.config = config;
 		outputJsonList = new ArrayList<JSONObject>();
@@ -31,7 +31,7 @@ public class JsonBusiness {
 	public void execute() {
 		Logger log = Logger.getLogger("execute");
 		
-		for(JsonStringStat mj : inputJsonStringList) {
+		for(StatisticaFS mj : inputJsonStringList) {
 		
 		JSONObject cookedJson = executeJsonReorganization(mj);
 		
@@ -55,7 +55,7 @@ public class JsonBusiness {
 	}
 	
 
-	private JSONObject executeJsonReorganization(JsonStringStat inputJsonString) {
+	private JSONObject executeJsonReorganization(StatisticaFS inputJsonString) {
 		Logger log = Logger.getLogger("JsonReorganization");
 		
 		JSONObject rawJson = new JSONObject(inputJsonString.jsonString);
@@ -70,7 +70,7 @@ public class JsonBusiness {
 			log.warning("Errore nella riorganizzazione del json");
 			throw e;
 		}
-		log.info("executeJsonReorganization success: " + rawJsonList.size() + " campi riorganizzati per l'uuid " + inputJsonString.name);
+		log.info("executeJsonReorganization success: " + rawJsonList.size() + " campi riorganizzati per l'uuid " + inputJsonString.uuid);
 		return myJson;
 	}
 

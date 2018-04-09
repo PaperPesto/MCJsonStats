@@ -2,9 +2,9 @@ package model;
 
 import java.io.File;
 
-public class JsonStringStat {
+public class StatisticaFS {
 	public String jsonString;
 	
 	public File sourceFile;
-	public String name;
+	public String uuid;
 }

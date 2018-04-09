@@ -3,12 +3,12 @@ package model;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
-import org.json.JSONObject;
 
+// Classe mappata su DB
 public class StatisticaDTO {
-	// Contiene solo i metadati, il json intero delle statistiche è complicato da parsare dal BSON
 	public ObjectId _id;
-	public Date date;
+	
 	public String uuid;
+	public Date date;
 	public int count;
 }

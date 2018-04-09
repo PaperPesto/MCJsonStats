@@ -117,19 +117,28 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 				String old_uuid = oldstat.uuid;
 
 				if (new_uuid.equals(old_uuid)) {
+					// match
 					Date new_date = (Date) newstat.get("date");
 					Date old_date = oldstat.date;
 					
 					System.out.println();
 					System.out.println("uuid: " + new_uuid);
-					System.out.println("vecchia: " + new_date);
-					System.out.println("nuova: " + old_date);
+					System.out.println("FS: " + new_date);
+					System.out.println("DB: " + old_date);
 					match = true;
 					
-					if(new_date.after(old_date)) {
-						System.out.println("----Data al contrario");
+					if(new_date.before(old_date)) {
+						System.out.println("Il DB è più aggiornato del FS (x)");
 					}
-					
+					if(new_date.equals(old_date)) {
+						System.out.println("La data su DB è uguale a quella su FS (no-update)");
+						
+					}
+					if(new_date.after(old_date)) {
+						System.out.println("Il DB deve essere aggiornato (v)");
+						// Inserimento su DB nuove statistiche
+//						insertStatistica(newstat);
+					}
 					break;
 				}
 			}

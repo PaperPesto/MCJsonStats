@@ -11,7 +11,7 @@ import dal.fs.FileSystemWriter;
 import dal.repository.CollectionTesterRepository;
 import dal.repository.GenericRepository;
 import dal.repository.StatisticaRepository;
-import model.JsonStringStat;
+import model.StatisticaFS;
 import model.MyConfiguration;
 import model.StatisticaDTO;
 import utility.ConfigurationManager;
@@ -37,21 +37,21 @@ public class Program {
 		// hnjb - codice di pica
 		StatisticaRepository statrepo = new StatisticaRepository(config);
 		statrepo.makeLastStatsCollection();
-		List<StatisticaDTO> laststats = statrepo.getLastStatistics();	// rimasto qui: adesso riesco a tirar su dal DB le ultime statistiche per ogni giocatore (per ogni uuid). Adesso devo implementare la logica che confronta le utlime statistiche con quelle lette da FS (oppure in futuro da FTP)
+		List<StatisticaDTO> oldstats = statrepo.getLastStatistics();
 
 		// Lettura da FS
 		FileSystemReader reader = new FileSystemReader(config);
 		reader.readFileList();
 		reader.read();
-		List<JsonStringStat> metajsonlist = reader.getPayload();
+		List<StatisticaFS> newstats = reader.getPayload();
 
 		// Core business
-		JsonBusiness business = new JsonBusiness(metajsonlist, config);
+		JsonBusiness business = new JsonBusiness(newstats, config);
 		business.execute();
 		List<JSONObject> jsonlist = business.getOutputJson();
 		
 		// Prova matching vecchie-nuove statistiche
-		statrepo.insertOnlyNewStats(laststats, jsonlist);
+		statrepo.insertOnlyNewStats(oldstats, jsonlist);
 
 		// Scrittura su DB - dead code
 		if (false) {
