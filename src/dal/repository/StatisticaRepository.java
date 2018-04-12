@@ -1,13 +1,17 @@
 package dal.repository;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.json.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -29,6 +33,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 
 	public StatisticaDTO getLastStatisticaById(String uuid) {
 
+		coll = db.getCollection(config.statsCollection);
 		Document document = coll.find(new Document("uuid", uuid)).sort(Sorts.ascending("date")).first();
 
 		StatisticaDTO stat = new StatisticaDTO();
@@ -41,7 +46,10 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 	}
 
 	public void makeLastStatsCollection() {
-
+		
+		db.getCollection(config.lastStatsCollection).drop(); // Elimino la collection con le utlime statistiche, verrà poi ricreata poche righe sotto nell'out
+		coll = db.getCollection(config.statsCollection);
+		
 		AggregateIterable<Document> docs = coll.aggregate(Arrays.asList(
 				new BasicDBObject("$sort", new BasicDBObject("date", 1)),
 				new BasicDBObject("$group",
@@ -61,6 +69,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 	public List<StatisticaDTO> getLastStatistics() {
 
 		coll = db.getCollection(config.lastStatsCollection);
+		
 		List<Document> docs = new ArrayList<Document>();
 		MongoCursor<Document> cursor = coll.find().iterator();
 
@@ -77,13 +86,22 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 
 	// builder di StatisticaDTO, non dovrebbe stare nel repository
 	private List<StatisticaDTO> statisticheBuilder(List<Document> documents) {
-
+		
 		List<StatisticaDTO> statistiche = new ArrayList<StatisticaDTO>();
 
+		DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
+		
+		
 		for (Document d : documents) {
 			StatisticaDTO stat = new StatisticaDTO();
 			stat.uuid = d.getString("_id");
-			stat.date = d.getDate("lastUpdate");
+			Date result = null;
+			try {
+				result =  df.parse(d.getString("lastUpdate"));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			stat.date = result;	// Attualmente lastUpdate non è una data in BSON, mi tocca parsarlo a merda
 			stat.count = d.getInteger("count");
 			statistiche.add(stat);
 		}
@@ -92,13 +110,11 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 	}
 
 	public void insertStatistica(JSONObject statistica) {
+		coll = db.getCollection(config.statsCollection);
 		Logger log = Logger.getLogger("StatisticaRepository::Insert");
-		Document stat = new Document();
-		stat.put("uuid", statistica.get("uuid"));
-		stat.put("date", statistica.get("date"));
-		Document document = Document.parse(statistica.get("stat").toString());
-		stat.put("stat", document);
-
+		log.info("Inserimento in " + config.statsCollection);
+		Document stat = Document.parse(statistica.toString());
+		
 		try {
 			coll.insertOne(stat);
 		} catch (Exception e) {
@@ -106,6 +122,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 			throw e;
 		}
 	}
+	
 
 	public void insertOnlyNewStats(List<StatisticaDTO> oldstats, List<JSONObject> newstats) {
 
@@ -127,17 +144,17 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 					System.out.println("DB: " + old_date);
 					match = true;
 					
-					if(new_date.before(old_date)) {
+					if(new_date.getTime()/1000 < old_date.getTime()/1000) {
 						System.out.println("Il DB è più aggiornato del FS (x)");
 					}
-					if(new_date.equals(old_date)) {
+					if(new_date.getTime()/1000 == old_date.getTime()/1000) {
 						System.out.println("La data su DB è uguale a quella su FS (no-update)");
 						
 					}
-					if(new_date.after(old_date)) {
+					if(new_date.getTime()/1000 > old_date.getTime()/1000) {
 						System.out.println("Il DB deve essere aggiornato (v)");
 						// Inserimento su DB nuove statistiche
-//						insertStatistica(newstat);
+						insertStatistica(newstat);
 					}
 					break;
 				}
