@@ -10,44 +10,64 @@ import bl.JsonBusiness;
 import dal.fs.FileSystemReader;
 import dal.fs.FileSystemWriter;
 import dal.repository.GenericRepository;
-import dal.repository.PlayerRepository;
-import model.MetaJson;
+import dal.repository.StatisticaRepository;
 import model.MyConfiguration;
+import model.StatisticaDTO;
+import model.StatisticaFS;
 import utility.ConfigurationManager;
 
 public class Program {
-	// TODO DI con file di configurazione
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
+
 		Logger log = Logger.getLogger("MainLogger");
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT | %4$-7s | %5$s %n");
 
 		// Lettura del file di configurazione
 		ConfigurationManager.readConfigFile();
 		MyConfiguration config = ConfigurationManager.getConfiguration();
-		
-		// Lettura Player da DB
-		PlayerRepository pgrepo = new PlayerRepository(config);
+
+		// Prova ancora
+		// GenericRepository filippo = new GenericRepository("test",
+		// "collezioneDiProva", config);
+		// Document morandi = new Document("carrozziera", "Renault");
+		// filippo.insertDocument(morandi);
+
+		// Prova su DemoStatCollection
+		// GenericRepository repo = new GenericRepository("javaTest",
+		// "demoStatCollection", config);
+		// repo.readDocumentsByGroup();
+		// CollectionTesterRepository reppo = new CollectionTesterRepository(config);
+		// reppo.generateDemoStatCollection();
 
 		// Lettura da FS
 		FileSystemReader reader = new FileSystemReader(config);
 		reader.readFileList();
 		reader.read();
-		List<MetaJson> metajsonlist = reader.getPayload();
+		List<StatisticaFS> newstats = reader.getPayload();
 
-		// Core business
-		JsonBusiness business = new JsonBusiness(metajsonlist, config);
+		// Riorganizzazione JSON
+		JsonBusiness business = new JsonBusiness(newstats, config); // Problemea qui
 		business.execute();
 		List<JSONObject> jsonlist = business.getOutputJson();
-	
+
+		// Finto inserimento di statistica
+		// for(JSONObject o : jsonlist) {
+		// statrepo.insertStatistica(o);
+		// }
+
+		// Lettura DB
+		StatisticaRepository statrepo = new StatisticaRepository(config);
+		statrepo.makeLastStatsCollection();
+		List<StatisticaDTO> oldstats = statrepo.getLastStatistics();
+
+		// Operazioni DAL con controllo
+		statrepo.insertOnlyNewStats(oldstats, jsonlist);
+
 		// Scrittura su FS
-		if(config.writeOnFs) {
+		if (config.writeOnFs) {
 			FileSystemWriter writer = new FileSystemWriter(jsonlist, config);
-			writer.writeFiles();			
+			writer.writeFiles();
 		}
-		
-		// Mongo
-		GenericRepository repo = new GenericRepository("Minecraft", "AnanasWorld.PlayerStatsTest", config);
-		Document doc = Document.parse(jsonlist.get(3).toString());
-		repo.insertDocument(doc);
 	}
 }

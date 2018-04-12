@@ -1,8 +1,8 @@
 package dal.repository;
 
-import org.bson.Document;
+import java.util.List;
 
-import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
 public interface IGenericRepository {
 
@@ -10,6 +10,7 @@ public interface IGenericRepository {
 	void insertDocument(Document document);
 	// Read
 	Document readDocument();
+	List<Document> readAllDocuments();
 	Document readFirstDocument();
 	Document readDocumentByKey(String key, int value);
 	Document readFirstDocumentByKey(String key, int value);

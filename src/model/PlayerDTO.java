@@ -1,11 +1,9 @@
-package dal;
-
-import java.util.Date;
+package model;
 
 public class PlayerDTO {
 	
 	public String nome;
 	public String cognome;
 	public String nickName;
-	public String minecraft_uuid;
+	public String uuid;
 }

@@ -12,5 +12,6 @@ public class MyConfiguration {
 	public String nameDB;
 	public String playersCollection;
 	public String statsCollection;
+	public String lastStatsCollection;
 	public String connectionString;
 }

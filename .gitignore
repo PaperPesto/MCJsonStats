@@ -1,2 +1,6 @@
 *.json
 demo.config
+*.class
+target/classes/META-INF/maven/MCJsonStats/MCJsonStats/pom.xml
+target/classes/META-INF/maven/MCJsonStats/MCJsonStats/pom.properties
+target/classes/META-INF/MANIFEST.MF

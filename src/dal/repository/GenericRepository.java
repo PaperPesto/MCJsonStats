@@ -1,18 +1,35 @@
 package dal.repository;
 
+import static com.mongodb.client.model.Aggregates.group;
+import static com.mongodb.client.model.Aggregates.out;
+import static com.mongodb.client.model.Aggregates.project;
+import static com.mongodb.client.model.Aggregates.sort;
+import static com.mongodb.client.model.Projections.fields;
+import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Sorts.orderBy;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.bson.Document;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 
 import dal.MongoClientConnection;
 import model.MyConfiguration;
+import model.StatisticaDTO;
 
 public class GenericRepository extends AbstractRepository implements IGenericRepository{
 
 	public GenericRepository(String dbName, String collName, MyConfiguration config) {
-		db = MongoClientConnection.getInstance(config).getDatabase(dbName);
+		this.config = config;
+		db = MongoClientConnection.getInstance(this.config).getDatabase(dbName);
 		coll = db.getCollection(collName);
 	}
 	
@@ -49,6 +66,40 @@ public class GenericRepository extends AbstractRepository implements IGenericRep
 		return coll.find().sort(Sorts.descending("ISOdate")).first();
 	}
 
+	
+	public List<Document> readAllDocuments() {
+		
+		List<Document> docs = new ArrayList<Document>();
+		MongoCursor<Document> cursor = coll.find().iterator();
+
+		while (cursor.hasNext()) {
+			Document document = cursor.next();
+			docs.add(document);
+		}
+		cursor.close();
+		
+		return docs;
+	}
+
+	public void readDocumentsByGroup() {
+		// Il pipeline ha un verso di percorrenza quando si fa il group dei documenti
+		// In particolare: prima si filtra, poi si grouppa, poi si fanno aggregazioni
+		AggregateIterable<Document> docs = coll.aggregate(Arrays.asList(
+				sort(orderBy(ascending("ISOdate"))),
+				new BasicDBObject("$group", 
+						new BasicDBObject("_id", "$id")
+						.append("lastUpdate", new BasicDBObject("$last", "$ISOdate"))
+						.append("count", new BasicDBObject("$sum", 1))),
+                out("aggregationFromJava")
+
+				));
+		
+		for(Document d : docs) {
+			System.out.println(d.toString());
+		}
+		
+		boolean ferma = true;
+	}
 
 
 }
