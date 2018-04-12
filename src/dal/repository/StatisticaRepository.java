@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 
@@ -25,12 +26,14 @@ import model.StatisticaDTO;
 
 public class StatisticaRepository extends AbstractRepository implements IStatisticaRepository {
 
+	
 	public StatisticaRepository(MyConfiguration config) {
 		this.config = config;
 		db = MongoClientConnection.getInstance(this.config).getDatabase(this.config.nameDB);
 		coll = db.getCollection(this.config.statsCollection);
 	}
 
+	
 	public StatisticaDTO getLastStatisticaById(String uuid) {
 
 		coll = db.getCollection(config.statsCollection);
@@ -45,9 +48,11 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		return stat;
 	}
 
+	
 	public void makeLastStatsCollection() {
 		
-		db.getCollection(config.lastStatsCollection).drop(); // Elimino la collection con le utlime statistiche, verrà poi ricreata poche righe sotto nell'out
+		lastStatsCollectionDrop();	// Droppa la collection
+		
 		coll = db.getCollection(config.statsCollection);
 		
 		AggregateIterable<Document> docs = coll.aggregate(Arrays.asList(
@@ -55,7 +60,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 				new BasicDBObject("$group",
 						new BasicDBObject("_id", "$uuid").append("lastUpdate", new BasicDBObject("$last", "$date"))
 								.append("count", new BasicDBObject("$sum", 1))),
-				new BasicDBObject("$out", config.lastStatsCollection)));
+				new BasicDBObject("$out", config.lastStatsCollection)));	// Ricrea la collecion
 
 		// Questo blocco qui sotto va messo per forza sennò non funziona - BUG della
 		// libreria?
@@ -63,15 +68,33 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 			Document d : docs) {
 
 		}
-		// --------------------------------------------------------------------
+		// --------------------
+	}
+	
+	
+	private void lastStatsCollectionDrop() {
+		Logger log = Logger.getLogger("StatisticaRepository::lastStatsCollectionDrop");
+		try {
+			db.getCollection(config.lastStatsCollection).drop(); // Elimino la collection con le utlime statistiche, verrà poi ricreata poche righe sotto nell'out
+		} catch(Exception e) {
+			log.warning("Errore nel drop della collection");
+		}
 	}
 
+	
 	public List<StatisticaDTO> getLastStatistics() {
-
-		coll = db.getCollection(config.lastStatsCollection);
+		
+		Logger log = Logger.getLogger("StatisticaRepository::getLastStatistica");
+		MongoCollection<Document> coll2 = null;
+		try {
+			coll2 = db.getCollection(config.lastStatsCollection);
+		} catch(Exception e) {
+			log.warning("Collection " + config.lastStatsCollection + " non trovata.");
+			throw e;
+		}
 		
 		List<Document> docs = new ArrayList<Document>();
-		MongoCursor<Document> cursor = coll.find().iterator();
+		MongoCursor<Document> cursor = coll2.find().iterator();
 
 		while (cursor.hasNext()) {
 			Document document = cursor.next();
@@ -84,13 +107,13 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		return statistiche;
 	}
 
+	
 	// builder di StatisticaDTO, non dovrebbe stare nel repository
 	private List<StatisticaDTO> statisticheBuilder(List<Document> documents) {
 		
 		List<StatisticaDTO> statistiche = new ArrayList<StatisticaDTO>();
 
 		DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
-		
 		
 		for (Document d : documents) {
 			StatisticaDTO stat = new StatisticaDTO();
@@ -109,10 +132,11 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		return statistiche;
 	}
 
+	
 	public void insertStatistica(JSONObject statistica) {
 		coll = db.getCollection(config.statsCollection);
 		Logger log = Logger.getLogger("StatisticaRepository::Insert");
-		log.info("Inserimento in " + config.statsCollection);
+		log.info("Inserimento in " + config.statsCollection + " dell'uuid " + statistica.get("uuid"));
 		Document stat = Document.parse(statistica.toString());
 		
 		try {
@@ -146,10 +170,11 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 					
 					if(new_date.getTime()/1000 < old_date.getTime()/1000) {
 						System.out.println("Il DB è più aggiornato del FS (x)");
+						// Sta leggendo statistiche più vecchie, forse è cambiata la cartella
 					}
 					if(new_date.getTime()/1000 == old_date.getTime()/1000) {
 						System.out.println("La data su DB è uguale a quella su FS (no-update)");
-						
+						// Non fare niente
 					}
 					if(new_date.getTime()/1000 > old_date.getTime()/1000) {
 						System.out.println("Il DB deve essere aggiornato (v)");
