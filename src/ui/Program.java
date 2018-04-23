@@ -17,28 +17,15 @@ import model.StatisticaFS;
 import utility.ConfigurationManager;
 
 public class Program {
-	@SuppressWarnings("unused")
+
 	public static void main(String[] args) throws Exception {
 
 		Logger log = Logger.getLogger("MainLogger");
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT | %4$-7s | %5$s %n");
-
-		// Lettura del file di configurazione
-		ConfigurationManager.readConfigFile();
+		
+		// Lettura del file di configurazione - args[0] è l'indirizzo del file di configurazione
+		ConfigurationManager.readConfigFile(args[0]);
 		MyConfiguration config = ConfigurationManager.getConfiguration();
-
-		// Prova ancora
-		// GenericRepository filippo = new GenericRepository("test",
-		// "collezioneDiProva", config);
-		// Document morandi = new Document("carrozziera", "Renault");
-		// filippo.insertDocument(morandi);
-
-		// Prova su DemoStatCollection
-		// GenericRepository repo = new GenericRepository("javaTest",
-		// "demoStatCollection", config);
-		// repo.readDocumentsByGroup();
-		// CollectionTesterRepository reppo = new CollectionTesterRepository(config);
-		// reppo.generateDemoStatCollection();
 
 		// Lettura da FS
 		FileSystemReader reader = new FileSystemReader(config);
@@ -47,14 +34,9 @@ public class Program {
 		List<StatisticaFS> newstats = reader.getPayload();
 
 		// Riorganizzazione JSON
-		JsonBusiness business = new JsonBusiness(newstats, config); // Problemea qui
+		JsonBusiness business = new JsonBusiness(newstats, config);
 		business.execute();
 		List<JSONObject> jsonlist = business.getOutputJson();
-
-		// Finto inserimento di statistica
-		// for(JSONObject o : jsonlist) {
-		// statrepo.insertStatistica(o);
-		// }
 
 		// Lettura DB
 		StatisticaRepository statrepo = new StatisticaRepository(config);

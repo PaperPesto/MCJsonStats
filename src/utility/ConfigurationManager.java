@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 import model.MyConfiguration;
 
 public class ConfigurationManager {
-		
-	private static File configfile= new File("demo.config");
 	
 	private static MyConfiguration configuration;
 	
@@ -19,11 +17,12 @@ public class ConfigurationManager {
 		return configuration;
 	}
 	
-	public static void readConfigFile() {
+	public static void readConfigFile(String path) {
 		
 		Logger log = Logger.getLogger("ConfigurationManagerLogger");
 		
 		try {
+			File configfile = new File(path);
 			FileReader reader = new FileReader(configfile);
 			Properties props = new Properties();
 			props.load(reader);

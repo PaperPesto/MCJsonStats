@@ -28,7 +28,9 @@ public class FileSystemReader {
 	public void readFileList() {
 		Logger log = Logger.getLogger("myLogger"); // si può far di meglio?
 		
+		log.info("folder: " + config.inputStatsDirectory.getAbsolutePath());
 		File folder = new File(config.inputStatsDirectory.getAbsolutePath());
+		log.info("filelist: " + folder.listFiles()[0].getAbsolutePath());
 		fileList = Arrays.asList(folder.listFiles());
 
 		log.info("Trovati " + fileList.size() + " file di statistiche nella cartella " + folder.getAbsolutePath());
