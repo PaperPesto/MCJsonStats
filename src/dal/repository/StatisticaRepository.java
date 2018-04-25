@@ -153,6 +153,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		for (JSONObject newstat : newstats) {
 			String new_uuid = newstat.getString("uuid");
 			boolean match = false;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 			for (StatisticaDTO oldstat : oldstats) {
 				String old_uuid = oldstat.uuid;
@@ -164,8 +165,8 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 					
 					System.out.println();
 					System.out.println("uuid: " + new_uuid);
-					System.out.println("FS: " + new_date);
-					System.out.println("DB: " + old_date);
+					System.out.println("FS: " + sdf.format(new_date));
+					System.out.println("DB: " + sdf.format(old_date));
 					match = true;
 					
 					if(new_date.getTime()/1000 < old_date.getTime()/1000) {
@@ -188,6 +189,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 			if(!match) {
 				// Ho trovato un nuovo uuid che non era presente nel DB
 				System.out.println("Trovato nuovo uuid: " + new_uuid);
+				insertStatistica(newstat);
 			}
 		}
 	}
