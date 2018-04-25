@@ -120,8 +120,8 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 			stat.uuid = d.getString("_id");
 			Date result = null;
 			try {
-				result =  df.parse(d.getString("lastUpdate"));
-			} catch (ParseException e) {
+				result =  d.getDate("lastUpdate");
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			stat.date = result;	// Attualmente lastUpdate non è una data in BSON, mi tocca parsarlo a merda
@@ -139,6 +139,8 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 		log.info("Inserimento in " + config.statsCollection + " dell'uuid " + statistica.get("uuid"));
 		Document stat = Document.parse(statistica.toString());
 		
+		stat.append("date", new Date(statistica.getLong("date")));	// Questo sovrascrive la date in stringa e la mette in datetime di mongo
+		
 		try {
 			coll.insertOne(stat);
 		} catch (Exception e) {
@@ -149,6 +151,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 	
 
 	public void insertOnlyNewStats(List<StatisticaDTO> oldstats, List<JSONObject> newstats) {
+		int newplayer = 0, oldercounter = 0, youngercounter = 0, samecounter = 0;
 
 		for (JSONObject newstat : newstats) {
 			String new_uuid = newstat.getString("uuid");
@@ -160,7 +163,7 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 
 				if (new_uuid.equals(old_uuid)) {
 					// match
-					Date new_date = (Date) newstat.get("date");
+					Date new_date = new Date(newstat.getLong("date"));
 					Date old_date = oldstat.date;
 					
 					System.out.println();
@@ -170,17 +173,20 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 					match = true;
 					
 					if(new_date.getTime()/1000 < old_date.getTime()/1000) {
-						System.out.println("Il DB è più aggiornato del FS (x)");
+						System.out.println("Il DB è più aggiornato del FS ( X )");
 						// Sta leggendo statistiche più vecchie, forse è cambiata la cartella
+						oldercounter++;
 					}
 					if(new_date.getTime()/1000 == old_date.getTime()/1000) {
-						System.out.println("La data su DB è uguale a quella su FS (no-update)");
+						System.out.println("La data su DB è uguale a quella su FS ( no-update )");
 						// Non fare niente
+						samecounter++;
 					}
 					if(new_date.getTime()/1000 > old_date.getTime()/1000) {
-						System.out.println("Il DB deve essere aggiornato (v)");
+						System.out.println("Il DB deve essere aggiornato ( V )");
 						// Inserimento su DB nuove statistiche
 						insertStatistica(newstat);
+						youngercounter++;
 					}
 					break;
 				}
@@ -188,9 +194,18 @@ public class StatisticaRepository extends AbstractRepository implements IStatist
 			
 			if(!match) {
 				// Ho trovato un nuovo uuid che non era presente nel DB
-				System.out.println("Trovato nuovo uuid: " + new_uuid);
+				System.out.println();
+				System.out.println("uuid: " + new_uuid);
+				System.out.println("FS: " + sdf.format(new Date(newstat.getLong("date"))));
 				insertStatistica(newstat);
+				newplayer++;
 			}
 		}
+		// Riepilogo
+		System.out.println();
+		System.out.println("Vecchie statistiche=" + oldercounter);
+		System.out.println("Stesse statistiche=" + samecounter);
+		System.out.println("Nuove statistiche=" + youngercounter);
+		System.out.println("Nuovo giocatore=" + newplayer);
 	}
 }

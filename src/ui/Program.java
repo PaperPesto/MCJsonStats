@@ -22,6 +22,7 @@ public class Program {
 
 		Logger log = Logger.getLogger("MainLogger");
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT | %4$-7s | %5$s %n");
+		log.info("### Start applicazione");
 		
 		// Lettura del file di configurazione - args[0] è l'indirizzo del file di configurazione
 		ConfigurationManager.readConfigFile(args[0]);
@@ -36,7 +37,7 @@ public class Program {
 		// Riorganizzazione JSON
 		JsonBusiness business = new JsonBusiness(newstats, config);
 		business.execute();
-		List<JSONObject> jsonlist = business.getOutputJson();
+		List<JSONObject> jsonlist = business.getOutputJson(); // Adesso non c'è più date e uuid, è raw
 
 		// Lettura DB
 		StatisticaRepository statrepo = new StatisticaRepository(config);
@@ -51,5 +52,6 @@ public class Program {
 			FileSystemWriter writer = new FileSystemWriter(jsonlist, config);
 			writer.writeFiles();
 		}
+		log.info("### Stop applicazione");
 	}
 }

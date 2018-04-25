@@ -3,6 +3,7 @@ package dal.fs;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,6 +30,12 @@ public class FileSystemWriter {
 			FileNameBuilder fnbuilder = new FileNameBuilder(js, myConfig);
 			fnbuilder.buildName();
 			String fileName = fnbuilder.getName();
+			
+			// lacchezzo long->date
+			Date date = new Date(js.getLong("date"));
+			js.remove("date");
+			js.put("date", date);
+			
 			try {
 				writer = new PrintWriter(fileName, "UTF-8");
 				writer.print(js.toString(1));

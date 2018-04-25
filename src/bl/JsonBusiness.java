@@ -30,38 +30,38 @@ public class JsonBusiness {
 
 	public void execute() {
 		Logger log = Logger.getLogger("execute");
-		
-		for(StatisticaFS mj : inputJsonStringList) {
-		
-		JSONObject cookedJson = executeJsonReorganization(mj);
-		
-		JSONObject dateJson = new JSONObject();
-		dateJson.put("date", new Date(mj.sourceFile.lastModified()));
-		JSONObject uuidJson = new JSONObject();
-		uuidJson.put("uuid", mj.sourceFile.getName().replace(".json", ""));
-//		JSONObject sourceFileJson = new JSONObject();
-//		sourceFileJson.put("sourceFile", inputMetaJson.metaDati.sourceFile.getAbsolutePath());
-		
-		try {
-		cookedJson = deepMerge(cookedJson, dateJson);
-		cookedJson = deepMerge(cookedJson, uuidJson);
-//		cookedJson = deepMerge(cookedJson, sourceFileJson);
-		} catch (Exception e) {
-			log.warning("Errore nell'aggiunta dei metadati");
-			throw e;
-		}
-		outputJsonList.add(cookedJson);
+
+		for (StatisticaFS mj : inputJsonStringList) {
+
+			JSONObject cookedJson = executeJsonReorganization(mj);
+
+			JSONObject dateJson = new JSONObject();
+			dateJson.put("date", mj.sourceFile.lastModified());	// Data messa come long
+			JSONObject uuidJson = new JSONObject();
+			uuidJson.put("uuid", mj.sourceFile.getName().replace(".json", ""));
+			// JSONObject sourceFileJson = new JSONObject();
+			// sourceFileJson.put("sourceFile",
+			// inputMetaJson.metaDati.sourceFile.getAbsolutePath());
+
+			try {
+				cookedJson = deepMerge(cookedJson, dateJson);
+				cookedJson = deepMerge(cookedJson, uuidJson);
+				// cookedJson = deepMerge(cookedJson, sourceFileJson);
+			} catch (Exception e) {
+				log.warning("Errore nell'aggiunta dei metadati");
+				throw e;
+			}
+			outputJsonList.add(cookedJson);
 		}
 	}
-	
 
 	private JSONObject executeJsonReorganization(StatisticaFS inputJsonString) {
 		Logger log = Logger.getLogger("JsonReorganization");
-		
+
 		JSONObject rawJson = new JSONObject(inputJsonString.jsonString);
 		List<JSONObject> rawJsonList = getJsonList(rawJson);
 		JSONObject myJson = new JSONObject();
-		
+
 		try {
 			for (JSONObject j : rawJsonList) {
 				myJson = deepMerge(myJson, j);
@@ -70,7 +70,7 @@ public class JsonBusiness {
 			log.warning("Errore nella riorganizzazione del json");
 			throw e;
 		}
-		log.info("executeJsonReorganization success: " + rawJsonList.size() + " campi riorganizzati per l'uuid " + inputJsonString.uuid);
+		log.info("Riorganizzati " + rawJsonList.size() + " campi per: " + inputJsonString.uuid);
 		return myJson;
 	}
 
