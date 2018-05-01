@@ -1,22 +1,13 @@
 package ui;
 
-import java.util.List;
 import java.util.logging.Logger;
 
-import org.bson.Document;
-import org.json.JSONObject;
-
-import bl.JsonBusiness;
-import dal.fs.FileSystemReader;
-import dal.fs.FileSystemWriter;
-import dal.repository.GenericRepository;
-import dal.repository.StatisticaRepository;
 import model.MyConfiguration;
-import model.StatisticaDTO;
-import model.StatisticaFS;
 import utility.ConfigurationManager;
 
 public class Program {
+	
+	private static MyConfiguration config;
 
 	public static void main(String[] args) throws Exception {
 
@@ -24,34 +15,30 @@ public class Program {
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT | %4$-7s | %5$s %n");
 		log.info("### Start applicazione");
 
-		// Lettura del file di configurazione - args[0] è l'indirizzo del file di
-		// configurazione
+		// 0 - Lettura del file di configurazione - args[0] è l'indirizzo del file di configurazione
 		ConfigurationManager.readConfigFile(args[0]);
-		MyConfiguration config = ConfigurationManager.getConfiguration();
+		config = ConfigurationManager.getConfiguration();
 
-		// Lettura da FS
-		FileSystemReaderController fsreader = new FileSystemReaderController(config);
-		fsreader.execute();
-		List<StatisticaFS> newstats = fsreader.get();
+		// 1 - Lettura da FS
+		FileSystemReaderController filesystemreadercontroller = new FileSystemReaderController(config);
+		filesystemreadercontroller.execute();
 
-		// Riorganizzazione JSON
-		JsonBusiness business = new JsonBusiness(newstats, config);
-		business.execute();
-		List<JSONObject> jsonlist = business.getOutputJson();
+		// 2 - Riorganizzazione JSON
+		JsonReorganizationController jsonreorganizationcontroller = new JsonReorganizationController(config, filesystemreadercontroller.get());
+		jsonreorganizationcontroller.execute();
 
-		// Lettura DB
-		StatisticaRepository statrepo = new StatisticaRepository(config);
-		statrepo.makeLastStatsCollection();
-		List<StatisticaDTO> oldstats = statrepo.getLastStatistics();
+		// 3 - Lettura DB
+		LastStatisticsController laststatisticscontroller = new LastStatisticsController(config);
+		laststatisticscontroller.execute();
 
-		// Operazioni DAL con controllo
-		statrepo.insertOnlyNewStats(oldstats, jsonlist);
+		// 4 - Inserimento su mongodb
+		InsertOnlyNewStatsController insertonlynewstatscontroller = new InsertOnlyNewStatsController(config, jsonreorganizationcontroller.get(), laststatisticscontroller.get());
+		insertonlynewstatscontroller.execute();
 
-		// Scrittura su FS
-		if (config.writeOnFs) {
-			FileSystemWriter writer = new FileSystemWriter(jsonlist, config);
-			writer.writeFiles();
-		}
+		// 5 - Scrittura su FS
+		FileSystemWriterController filesystemwritercontroller = new FileSystemWriterController(config, jsonreorganizationcontroller.get());
+		filesystemwritercontroller.execute();
+		
 		log.info("### Stop applicazione");
 	}
 }
