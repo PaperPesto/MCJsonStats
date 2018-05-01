@@ -1,12 +1,8 @@
 package dal.repository;
 
-import static com.mongodb.client.model.Aggregates.group;
 import static com.mongodb.client.model.Aggregates.out;
-import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Aggregates.sort;
-import static com.mongodb.client.model.Projections.fields;
-import static com.mongodb.client.model.Projections.include;
-import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Sorts.ascending;
 import static com.mongodb.client.model.Sorts.orderBy;
 
 import java.util.ArrayList;
@@ -23,7 +19,6 @@ import com.mongodb.client.model.Sorts;
 
 import dal.MongoClientConnection;
 import model.MyConfiguration;
-import model.StatisticaDTO;
 
 public class GenericRepository extends AbstractRepository implements IGenericRepository{
 

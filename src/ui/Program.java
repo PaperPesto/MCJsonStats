@@ -23,21 +23,21 @@ public class Program {
 		Logger log = Logger.getLogger("MainLogger");
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT | %4$-7s | %5$s %n");
 		log.info("### Start applicazione");
-		
-		// Lettura del file di configurazione - args[0] è l'indirizzo del file di configurazione
+
+		// Lettura del file di configurazione - args[0] è l'indirizzo del file di
+		// configurazione
 		ConfigurationManager.readConfigFile(args[0]);
 		MyConfiguration config = ConfigurationManager.getConfiguration();
 
 		// Lettura da FS
-		FileSystemReader reader = new FileSystemReader(config);
-		reader.readFileList();
-		reader.read();
-		List<StatisticaFS> newstats = reader.getPayload();
+		FileSystemReaderController fsreader = new FileSystemReaderController(config);
+		fsreader.execute();
+		List<StatisticaFS> newstats = fsreader.get();
 
 		// Riorganizzazione JSON
 		JsonBusiness business = new JsonBusiness(newstats, config);
 		business.execute();
-		List<JSONObject> jsonlist = business.getOutputJson(); // Adesso non c'è più date e uuid, è raw
+		List<JSONObject> jsonlist = business.getOutputJson();
 
 		// Lettura DB
 		StatisticaRepository statrepo = new StatisticaRepository(config);
