@@ -15,3 +15,6 @@ Business:
 
 
 == To be implemented: read from FTP server
+
+
+java -jar mcjsonstats.jar minemongo.config
